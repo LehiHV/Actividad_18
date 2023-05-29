@@ -1,0 +1,50 @@
+﻿@page "/Comandas/Editar/{Id:int}"
+@using Actividad_18.Shared.Models;
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Nueva Comanda</h3>
+
+<EditForm Model="traba" OnValidSubmit="Editar">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="numTrabajadorId" class="form-label">Id del Trabajador</label>
+        <InputNumber id="numTrabajadorId" class="form-control" @bind-Value="traba.TrabajadorId" />
+    </div>
+    <div class="mb-3">
+        <label for="numHoras" class="form-label">Horas</label>
+        <InputNumber id="numHoras" class="form-control" @bind-Value="traba.Horas" />
+    </div>
+    <div class="mb-3">
+        <label for="numFechaI" class="form-label">Fecha de Inicio</label>
+        <InputDate id="numFechaI" class="form-control" @bind-Value="traba.FechaI" />
+    </div>
+    <div class="mb-3">
+        <label for="numFechaF" class="form-label">Fecha de Finalizaacion</label>
+        <InputDate id="numFechaF" class="form-control" @bind-Value="traba.FechaF" />
+    </div>
+    <div class="mb-3">
+        <label for="numEdificioId" class="form-label">Id del Edificio</label>
+        <InputNumber id="numEdificioId" class="form-control" @bind-Value="traba.Id_Edificios" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Comandas traba = new Comandas();
+
+    protected override async Task OnInitializedAsync()
+    {
+        traba = await http.GetFromJsonAsync<Comandas>($"api/Comandas/{Id}");
+    }
+
+    private async void Editar()
+    {
+        await http.PutAsJsonAsync($"api/Comandas/{Id}", traba);
+        navegar.NavigateTo("/Comanda");
+    }
+}

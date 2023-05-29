@@ -1,0 +1,72 @@
+﻿@page "/Edificio"
+@using Actividad_18.Shared.Models;
+@inject HttpClient http
+@inject NavigationManager navegar
+
+
+<h3>Lista de Edificios</h3>
+
+<button class="btn btn-primary" @onclick="Agregar"><span class="oi oi-plus">Nuevo Edificio</span></button>
+
+@if (losEdificios == null)
+{
+    <h3>Cargando...</h3>
+}
+else if (losEdificios.Count == 0)
+{
+    <h3>No hay Edificios</h3>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Direccion</th>
+                <th>Tipo</th>
+                <th>Id de Supervisor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in losEdificios)
+            {
+                <tr>
+                    <td>@t.Id</td>
+                    <td>@t.Nombre_Edificio</td>
+                    <td>@t.Dirreccion</td>
+                    <td>@t.Tipo</td>
+                    <td>@t.TrabajadoresId</td>
+                    <td><button class="btn btn-warning" @onclick="(()=>Editar(Convert.ToInt32(t.Id)))"><span class="oi oi-trash">Editar Edificio</span></button></td>
+                    <td><button class="btn btn-danger   " @onclick="(()=>Eliminar(t))"><span class="oi oi-trash">Eliminar Edificio</span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Edificios> losEdificios;
+    protected override async Task OnInitializedAsync()
+    {
+        losEdificios = await http.GetFromJsonAsync<List<Edificios>>("api/Edificios");
+    }
+
+    public void Agregar()
+    {
+        navegar.NavigateTo("/Edificios/Nuevo");
+    }
+
+    public async Task Eliminar(Edificios edificio)
+    {
+        await http.DeleteAsync($"api/Edificios/{edificio.Id}");
+        losEdificios.Remove(edificio);
+    }
+
+    private void Editar(int Id)
+    {
+        navegar.NavigateTo($"/Edificios/Editar/{Id}");
+    }
+}

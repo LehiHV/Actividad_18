@@ -1,0 +1,38 @@
+﻿@page "/Trabajador/Nuevo"
+@using Actividad_18.Shared.Models
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Nuevo Trabajador</h3>
+
+<EditForm Model="traba" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator/>
+    
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText id="txtNombre" class="form-control" @bind-Value="traba.Nombre" />
+    </div>
+    <div class="mb-3">
+        <label for="txtPuesto" class="form-label">Puesto</label>
+        <InputText id="txtPuesto" class="form-control" @bind-Value="traba.Puesto" />
+    </div>
+    <div class="mb-3">
+        <label for="numSalario" class="form-label">Salario</label>
+        <InputNumber id="numSalario" class="form-control" @bind-Value="traba.Salario" />
+    </div>
+    <div class="mb-3">
+        <label for="numIdSup" class="form-label">Id del Supervisor</label>
+        <InputText id="numIdSup" class="form-control" @bind-Value="traba.Id_Sup" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    private Trabajadores traba = new Trabajadores();
+    private async void Guardar()
+    {
+        await http.PostAsJsonAsync("api/Trabajadores", traba);
+        navegar.NavigateTo("/ListTrabajador");
+    }
+}

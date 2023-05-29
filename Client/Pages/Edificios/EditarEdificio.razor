@@ -1,0 +1,46 @@
+﻿@page "/Edificios/Editar/{Id:int}";
+@using Actividad_18.Shared.Models;
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Editar Edificio</h3>
+
+<EditForm Model="traba" OnValidSubmit="Editar">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText id="txtNombre" class="form-control" @bind-Value="traba.Nombre_Edificio" />
+    </div>
+    <div class="mb-3">
+        <label for="txtPuesto" class="form-label">Direccion</label>
+        <InputText id="txtPuesto" class="form-control" @bind-Value="traba.Dirreccion" />
+    </div>
+    <div class="mb-3">
+        <label for="numSalario" class="form-label">Tipo</label>
+        <InputText id="numSalario" class="form-control" @bind-Value="traba.Tipo" />
+    </div>
+    <div class="mb-3">
+        <label for="numIdSup" class="form-label">Id del Supervisor</label>
+        <InputNumber id="numIdSup" class="form-control" @bind-Value="traba.TrabajadoresId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Edificios traba = new Edificios();
+
+    protected override async Task OnInitializedAsync()
+    {
+        traba = await http.GetFromJsonAsync<Edificios>($"api/Edificios/{Id}");
+    }
+
+    private async void Editar()
+    {
+        await http.PutAsJsonAsync($"api/Edificios/{Id}", traba);
+        navegar.NavigateTo("/Edificio");
+    }
+}

@@ -1,0 +1,76 @@
+﻿@page "/Comanda"
+@using Actividad_18.Shared.Models;
+@inject HttpClient http
+@inject NavigationManager navegar
+
+
+<h3>Lista de Comandas</h3>
+
+<button class="btn btn-primary" @onclick="Agregar"><span class="oi oi-plus">Nueva Comanda</span></button>
+
+@if (lascomandas == null)
+{
+    <h3>Cargando...</h3>
+}
+else if (lascomandas.Count == 0)
+{
+    <h3>No hay Comandas</h3>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id del Trabajador Asignado</th>
+                <th>Nombre del Trabajador</th>
+                <th>Horas</th>
+                <th>Fecha de Inicio</th>
+                <th>Fecha de Finalizacion</th>
+                <th>Id del Edificio</th>
+                <th>Nombre del Edificio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in lascomandas)
+            {
+                <tr>
+                    <td>@t.TrabajadorId</td>
+                    <td>@t.Nombre</td>
+                    <td>@t.Horas</td>
+                    <td>@t.FechaI</td>
+                    <td>@t.FechaF</td>
+                    <td>@t.Id_Edificios</td>
+                    <td>@t.Nombre_Edificio</td>
+                    <td><button class="btn btn-warning" @onclick="(()=>Editar(Convert.ToInt32(t.Id)))"><span class="oi oi-trash">Editar Edificio</span></button></td>
+                    <td><button class="btn btn-danger   " @onclick="(()=>Eliminar(t))"><span class="oi oi-trash">Eliminar Edificio</span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Comandas> lascomandas;
+    protected override async Task OnInitializedAsync()
+    {
+        lascomandas = await http.GetFromJsonAsync<List<Comandas>>("api/Comandas");
+    }
+
+    public void Agregar()
+    {
+        navegar.NavigateTo("/Comandas/Nuevo");
+    }
+
+    public async Task Eliminar(Comandas comanda)
+    {
+        await http.DeleteAsync($"api/Comandas/{comanda.Id}");
+        lascomandas.Remove(comanda);
+    }
+
+    private void Editar(int Id)
+    {
+        navegar.NavigateTo($"/Comandas/Editar/{Id}");
+    }
+}
